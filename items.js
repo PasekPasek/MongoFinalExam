@@ -80,7 +80,6 @@ function ItemDAO(database) {
             };
 
             categories.push(category);
-            console.log(categories);
 
             callback(categories);
         });
@@ -146,10 +145,16 @@ function ItemDAO(database) {
          * of a call to the getNumItems() method.
          *
          */
+        this.db.collection("item").count({category: category}, function (err, numOfDocs) {
+            numItems = numOfDocs;
+            callback(numItems);
+        })
+
+
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the count to the callback.
-        callback(numItems);
+
     }
 
 
