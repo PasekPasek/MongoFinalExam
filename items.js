@@ -194,18 +194,29 @@ function ItemDAO(database) {
          *
          */
 
-        var item = this.createDummyItem();
-        var items = [];
-        for (var i = 0; i < 5; i++) {
-            items.push(item);
-        }
+        ///////Execute in mongo shell db.item.createIndex({title: "text", slogan: "text", description:"text"})
 
-        // TODO-lab2A Replace all code above (in this method).
+        this.db.collection("item")
+            .find({ '$text': {'$search' : query } })
+            .sort(['_id',1])
+            .skip(page * itemsPerPage)
+            .limit(itemsPerPage)
+            .toArray(function (err, categoriesarray) {
+                callback(categoriesarray);
+            });
 
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the items for the selected page
-        // of search results to the callback.
-        callback(items);
+        // var item = this.createDummyItem();
+        // var items = [];
+        // for (var i = 0; i < 5; i++) {
+        //     items.push(item);
+        // }
+        //
+        // // TODO-lab2A Replace all code above (in this method).
+        //
+        // // TODO Include the following line in the appropriate
+        // // place within your code to pass the items for the selected page
+        // // of search results to the callback.
+        // callback(items);
     }
 
 
@@ -213,6 +224,13 @@ function ItemDAO(database) {
         "use strict";
 
         var numItems = 0;
+
+        this.db.collection("item")
+            .find({ '$text': {'$search' : query } })
+            .count({}, function (err, numOfDocs) {
+            numItems = numOfDocs;
+            callback(numItems);
+        })
 
         /*
         * TODO-lab2B
@@ -227,7 +245,7 @@ function ItemDAO(database) {
         * simply do this in the mongo shell.
         */
 
-        callback(numItems);
+        // callback(numItems);
     }
 
 
