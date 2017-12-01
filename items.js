@@ -311,17 +311,30 @@ function ItemDAO(database) {
             comment: comment,
             stars: stars,
             date: Date.now()
-        }
+        };
 
         // TODO replace the following two lines with your code that will
         // update the document with a new review.
-        var doc = this.createDummyItem();
-        doc.reviews = [reviewDoc];
+        // var doc = this.createDummyItem();
+        // doc.reviews = [reviewDoc];
+
+        this.db.collection("item")
+            .find({ _id: itemId})
+            .toArray(function (err, oneItemArray) {
+                var doc = oneItemArray[0];
+                if(doc.reviews != null && doc.reviews.length > 1){
+                    doc.reviews.push(reviewDoc);
+                }else{
+                    doc.reviews = [reviewDoc];
+                }
+                console.log(doc);
+                callback(doc);
+            });
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the updated doc to the
         // callback.
-        callback(doc);
+
     }
 
 
