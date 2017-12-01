@@ -318,16 +318,16 @@ function ItemDAO(database) {
         // var doc = this.createDummyItem();
         // doc.reviews = [reviewDoc];
 
-        this.db.collection("item")
-            .find({ _id: itemId})
-            .toArray(function (err, oneItemArray) {
-                var doc = oneItemArray[0];
-                if(doc.reviews != null && doc.reviews.length > 1){
-                    doc.reviews.push(reviewDoc);
-                }else{
-                    doc.reviews = [reviewDoc];
-                }
-                console.log(doc);
+        // var doc = this.db.collection("item")
+        //     .updateOne({ _id: itemId}, {$push: {reviews: reviewDoc}}, {}, function (mongoError, doc) {
+        //         console.log("!!!!!! this is working" + doc);
+        //         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        //         callback(doc);
+        //     });
+
+        this.db.collection("item").findOneAndUpdate({ _id: itemId}, {$push: {reviews: reviewDoc}}, {},
+            function (mongoError, result) {
+                var doc = result.value;
                 callback(doc);
             });
 
