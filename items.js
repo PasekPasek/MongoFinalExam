@@ -111,18 +111,27 @@ function ItemDAO(database) {
          *
          */
 
-        var pageItem = this.createDummyItem();
-        var pageItems = [];
-        for (var i = 0; i < 5; i++) {
-            pageItems.push(pageItem);
-        }
+        this.db.collection("item")
+            .find({category:category})
+            .sort(['_id',1])
+            .skip(page * itemsPerPage)
+            .limit(itemsPerPage)
+            .toArray(function (err, categoriesarray) {
+                callback(categoriesarray);
+            });
+
+        // var pageItem = this.createDummyItem();
+        // var pageItems = [];
+        // for (var i = 0; i < 5; i++) {
+        //     pageItems.push(pageItem);
+        // }
 
         // TODO-lab1B Replace all code above (in this method).
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the items for the selected page
         // to the callback.
-        callback(pageItems);
+        // callback(pageItems);
     }
 
 
