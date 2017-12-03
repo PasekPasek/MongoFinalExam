@@ -91,7 +91,33 @@ function CartDAO(database) {
          *
          */
 
-        callback(null);
+        // this.db.collection("cart")
+        //     .find({userId: userId, "items": {$elemMatch: {"_id": itemId}}}, {"items.$":1})
+        //     .toArray(
+        //         function (mongoError, array) {
+        //             if(array[0] != null){
+        //                 console.log(array[0].items[0]);
+        //                 callback(array[0].items[0]);
+        //             }else{
+        //                 callback(null);
+        //             }
+        //
+        //         });
+
+        this.db.collection("cart")
+            .find({userId: userId, "items._id":itemId}, {"items.$":1})
+            .limit(1)
+            .next(function (mongoError, item) {
+                assert.equal(null, mongoError);
+                console.log(mongoError);
+                if(item !=  null){
+                    item = item.items[0];
+                }
+                console.log(item);
+                callback(item);
+            });
+
+        // callback(null);
 
         // TODO-lab6 Replace all code above (in this method).
     }
@@ -183,14 +209,35 @@ function CartDAO(database) {
         *
         */
 
-        var userCart = {
-            userId: userId,
-            items: []
+        // var userCart = {
+        //     userId: userId,
+        //     items: []
+        // }
+        // var dummyItem = this.createDummyItem();
+        // dummyItem.quantity = quantity;
+        // userCart.items.push(dummyItem);
+        // callback(userCart);
+
+        var updateDoc = {};
+
+        if(quantity == 0){
+            updateDoc = {"$pull": {items: {_id: itemId}}};
+        }else{
+            updateDoc = {"$set": {"items.$.quantity": quantity}};
         }
-        var dummyItem = this.createDummyItem();
-        dummyItem.quantity = quantity;
-        userCart.items.push(dummyItem);
-        callback(userCart);
+
+        this.db.collection("cart").findOneAndUpdate(
+            {"userId": userId, "items._id": itemId},
+            updateDoc,
+            {returnOriginal: false},
+            function (mongoError, result) {
+                assert.equal(null, mongoError);
+                console.log(result.value);
+                callback(result.value);
+            }
+        )
+
+
 
         // TODO-lab7 Replace all code above (in this method).
 
